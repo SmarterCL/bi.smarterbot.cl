@@ -106,7 +106,7 @@ bot.smarterbot.cl {
 # ODOO.SMARTERBOT.CL - ERP (Odoo Clone)
 # ============================================
 odoo.smarterbot.cl {
-    reverse_proxy odoo-clone-frontend:3000
+    reverse_proxy odoo-deploy_odoo_1:8069
     encode gzip
     log {
         output file /var/log/caddy/odoo-access.log
@@ -118,7 +118,7 @@ odoo.smarterbot.cl {
 # TIENDA.SMARTERBOT.CL - Tienda Online (Odoo)
 # ============================================
 tienda.smarterbot.cl {
-    reverse_proxy odoo-clone-frontend:3000
+    reverse_proxy odoo-deploy_odoo_1:8069
     encode gzip
     log {
         output file /var/log/caddy/tienda-access.log
