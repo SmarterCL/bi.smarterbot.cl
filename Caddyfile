@@ -115,6 +115,18 @@ odoo.smarterbot.cl {
 }
 
 # ============================================
+# TIENDA.SMARTERBOT.CL - Tienda Online (Odoo)
+# ============================================
+tienda.smarterbot.cl {
+    reverse_proxy odoo-clone-frontend:3000
+    encode gzip
+    log {
+        output file /var/log/caddy/tienda-access.log
+        level INFO
+    }
+}
+
+# ============================================
 # ODOO.SMARTERBOT.STORE - ERP (Odoo Clone)
 # ============================================
 odoo.smarterbot.store {
