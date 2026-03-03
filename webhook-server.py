@@ -11,7 +11,7 @@ import os
 import json
 from urllib.parse import urlparse
 
-PORT = 9000
+PORT = 8089
 DEPLOY_SCRIPT = "/root/bi-smarterbot/deploy.sh"
 LOG_FILE = "/var/log/bi-webhook.log"
 
