@@ -32,7 +32,7 @@ bi.smarterbot.cl {
 # WEBHOOK - Auto-deploy endpoint
 # ============================================
 bi.smarterbot.cl/api/webhook {
-    reverse_proxy bi-webhook-server:8888
+    reverse_proxy bi-webhook-server:9000
     encode gzip
     log {
         output file /var/log/caddy/webhook-access.log
