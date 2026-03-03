@@ -366,10 +366,12 @@ export default function Dashboard() {
       <div className="section">
         <h2>🚀 Quick Links</h2>
         <div className="quick-links">
+          <a href="https://bi.smarterbot.cl" target="_blank" className="quick-link">📊 BI Dashboard</a>
+          <a href="https://odoo.smarterbot.cl" target="_blank" className="quick-link">📦 CRM</a>
+          <a href="https://odoo.smarterbot.cl" target="_blank" className="quick-link">📈 ERP</a>
           <a href="https://api.smarterbot.cl/docs" target="_blank" className="quick-link">📖 API Docs</a>
           <a href="https://n8n.smarterbot.cl" target="_blank" className="quick-link">⚡ N8N</a>
           <a href="https://chat.smarterbot.cl" target="_blank" className="quick-link">💬 Chatwoot</a>
-          <a href="https://odoo.smarterbot.cl" target="_blank" className="quick-link">📦 Odoo</a>
           <a href="https://rag.smarterbot.cl" target="_blank" className="quick-link">📄 RAG/Docling</a>
           <a href="https://bot.smarterbot.cl" target="_blank" className="quick-link">🤖 Bot Portal</a>
           <a href="https://dokploy.smarterbot.store" target="_blank" className="quick-link">🎛️ Dokploy</a>
