@@ -13,6 +13,28 @@ services:
       - NODE_ENV=production
       - PORT=3001
 
+  telegram-bot:
+    image: python:3.11-slim
+    container_name: smarteros-telegram-bot
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./telegram_bot.py:/app/telegram_bot.py
+      - ./alertmanager.yml:/app/alertmanager.yml
+    networks:
+      - smarteros-network
+    ports:
+      - "8443:8443"
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_ADMIN_CHAT_ID=${TELEGRAM_ADMIN_CHAT_ID}
+      - PROMETHEUS_URL=http://smarteros-prometheus:9090
+      - GRAFANA_URL=http://smarteros-grafana:3000
+    command: >
+      sh -c "pip install aiogram aiohttp && python telegram_bot.py"
+    depends_on:
+      - bi-dashboard
+
 networks:
   smarteros-network:
     external: true

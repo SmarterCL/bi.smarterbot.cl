@@ -1,0 +1,87 @@
+groups:
+  - name: smarteros_alerts
+    interval: 30s
+    rules:
+      # CPU Alert
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 1m
+        labels:
+          severity: warning
+          channel: telegram
+        annotations:
+          summary: "⚠️ CPU High Usage"
+          description: "CPU usage is {{ $value }}% on {{ $labels.instance }}"
+          telegram_message: "⚠️ *CPU High Usage*\n\nServer: {{ $labels.instance }}\nCurrent: {{ $value }}%\nThreshold: 80%\n\nCheck: https://bi.smarterbot.cl"
+
+      # Memory Alert
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 1m
+        labels:
+          severity: warning
+          channel: telegram
+        annotations:
+          summary: "⚠️ Memory High Usage"
+          description: "Memory usage is {{ $value }}% on {{ $labels.instance }}"
+          telegram_message: "⚠️ *Memory High Usage*\n\nServer: {{ $labels.instance }}\nCurrent: {{ $value }}%\nThreshold: 85%\n\nCheck: https://bi.smarterbot.cl"
+
+      # Disk Alert
+      - alert: LowDiskSpace
+        expr: (1 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})) * 100 > 85
+        for: 5m
+        labels:
+          severity: critical
+          channel: telegram
+        annotations:
+          summary: "🗄️ Low Disk Space"
+          description: "Disk usage is {{ $value }}% on {{ $labels.instance }}"
+          telegram_message: "🗄️ *Low Disk Space*\n\nServer: {{ $labels.instance }}\nUsed: {{ $value }}%\nThreshold: 85%\n\nAction Required!"
+
+      # Service Down Alert
+      - alert: ServiceDown
+        expr: up == 0
+        for: 30s
+        labels:
+          severity: critical
+          channel: telegram
+        annotations:
+          summary: "🔴 Service Down"
+          description: "{{ $labels.job }} is down on {{ $labels.instance }}"
+          telegram_message: "🔴 *SERVICE DOWN*\n\nService: {{ $labels.job }}\nInstance: {{ $labels.instance }}\n\nImmediate action required!"
+
+      # Container Restart Alert
+      - alert: ContainerRestarting
+        expr: rate(container_last_seen{name!=""}[5m]) > 1
+        for: 2m
+        labels:
+          severity: warning
+          channel: telegram
+        annotations:
+          summary: "🔄 Container Restarting"
+          description: "Container {{ $labels.name }} is restarting frequently"
+          telegram_message: "🔄 *Container Restarting*\n\nContainer: {{ $labels.name }}\n\nCheck logs immediately!"
+
+      # API Latency Alert (Flow.cl)
+      - alert: FlowAPISlow
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~".*flow.*"}[5m])) > 2
+        for: 1m
+        labels:
+          severity: warning
+          channel: telegram
+        annotations:
+          summary: "🐌 Flow API Slow Response"
+          description: "95th percentile latency is {{ $value }}s"
+          telegram_message: "🐌 *Flow API Slow*\n\nLatency (p95): {{ $value }}s\nThreshold: 2s\n\nCheck Flow.cl integration!"
+
+      # Database Connections Alert
+      - alert: HighDBConnections
+        expr: pg_stat_activity_count > 100
+        for: 2m
+        labels:
+          severity: warning
+          channel: telegram
+        annotations:
+          summary: "🗄️ High DB Connections"
+          description: "PostgreSQL has {{ $value }} active connections"
+          telegram_message: "🗄️ *High DB Connections*\n\nActive: {{ $value }}\nThreshold: 100\n\nCheck for connection leaks!"
