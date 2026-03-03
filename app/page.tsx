@@ -314,9 +314,9 @@ export default function Dashboard() {
               </li>
               <li>
                 <strong>Q: How do I test the Golden Path?</strong>
-                <code>curl -X POST http://localhost:3051/execute \
-  -H "Content-Type: application/json" \
-  -d '{"tool":"docker.list_containers","data":{},"tenant_id":"smarteros"}' | jq .</code>
+                <code>{`curl -X POST http://localhost:3051/execute \\
+  -H "Content-Type: application/json" \\
+  -d '{"tool":"docker.list_containers","data":{},"tenant_id":"smarteros"}' | jq .`}</code>
               </li>
               <li>
                 <strong>Q: How do I send a Telegram test?</strong>
