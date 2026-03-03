@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  bi-app:
+    image: ghcr.io/smartercl/bi-smarterbot:latest
+    container_name: bi-smarterbot-app
+    restart: unless-stopped
+    networks:
+      - dokploy-network
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bi.rule=Host(`bi.smarterbot.cl`)"
+      - "traefik.http.routers.bi.entrypoints=websecure"
+      - "traefik.http.routers.bi.tls=true"
+      - "traefik.http.routers.bi.tls.certresolver=letsencrypt"
+      - "traefik.http.services.bi.loadbalancer.server.port=3001"
+
+networks:
+  dokploy-network:
+    external: true
+    name: dokploy-network

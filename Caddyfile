@@ -20,7 +20,7 @@ api.smarterbot.cl {
 # BI.SMARTERBOT.CL - Command Center Dashboard
 # ============================================
 bi.smarterbot.cl {
-    reverse_proxy 172.20.0.3:3001
+    reverse_proxy smarteros-bi-dashboard:3001
     encode gzip
     log {
         output file /var/log/caddy/bi-access.log
