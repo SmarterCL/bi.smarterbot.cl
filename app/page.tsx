@@ -106,8 +106,8 @@ export default function Dashboard() {
           <h3>Grafana Metrics <span className="status"><span className="status-dot"></span> Online</span></h3>
           <p>Real-time monitoring dashboards. Track CPU, memory, disk, network usage, and service health.</p>
           <div className="actions">
-            <a href="http://localhost:3000" target="_blank" className="btn btn-primary">📈 View Dashboard</a>
-            <span className="btn btn-secondary">SSH Tunnel</span>
+            <span className="btn btn-primary">🔒 Internal Only</span>
+            <span className="btn btn-secondary">SSH Tunnel Required</span>
           </div>
         </div>
 
@@ -150,8 +150,8 @@ export default function Dashboard() {
           <h3>Prometheus <span className="status"><span className="status-dot"></span> Online</span></h3>
           <p>Metrics collection and alerting. Scrapes all services every 15s. 30-day retention.</p>
           <div className="actions">
-            <a href="http://localhost:9090" target="_blank" className="btn btn-primary">🔍 Query Browser</a>
-            <span className="btn btn-secondary">SSH Tunnel</span>
+            <span className="btn btn-primary">🔒 Internal Only</span>
+            <span className="btn btn-secondary">SSH Tunnel Required</span>
           </div>
         </div>
 
