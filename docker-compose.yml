@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  bi-dashboard:
+    build: .
+    container_name: smarteros-bi-dashboard
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    networks:
+      - smarteros-network
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+
+networks:
+  smarteros-network:
+    external: true
+    name: smarteros-network
