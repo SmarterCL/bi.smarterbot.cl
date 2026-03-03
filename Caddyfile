@@ -1,0 +1,170 @@
+# ============================================================
+# CADDYFILE - SMARTERBOT.CL PRODUCTION
+# Solo servicios REALES + PÚBLICOS
+# Grafana/Prometheus = SOLO SSH TUNNEL
+# ============================================================
+
+# ============================================
+# API.SMARTERBOT.CL - Gateway Principal
+# ============================================
+api.smarterbot.cl {
+    reverse_proxy smarteros-api-mcp:3000
+    encode gzip
+    log {
+        output file /var/log/caddy/api-access.log
+        level INFO
+    }
+}
+
+# ============================================
+# BI.SMARTERBOT.CL - Command Center Dashboard
+# ============================================
+bi.smarterbot.cl {
+    reverse_proxy smarteros-bi-dashboard:3001
+    encode gzip
+    log {
+        output file /var/log/caddy/bi-access.log
+        level INFO
+    }
+}
+
+# ============================================
+# DASHBOARD.SMARTERBOT.CL - SmarterOS Command Center (Legacy)
+# ============================================
+dashboard.smarterbot.cl {
+    root * /srv/dashboard
+    file_server
+    encode gzip
+    log {
+        output file /var/log/caddy/dashboard-access.log
+        level INFO
+    }
+}
+
+# ============================================
+# N8N.SMARTERBOT.CL - Workflows
+# ============================================
+n8n.smarterbot.cl {
+    reverse_proxy smarteros-n8n:5678
+    encode gzip
+    log {
+        output file /var/log/caddy/n8n-access.log
+        level INFO
+    }
+}
+
+# ============================================
+# RAG.SMARTERBOT.CL - Document Parser (Docling)
+# ============================================
+rag.smarterbot.cl {
+    reverse_proxy smarter-docling:8080
+    encode gzip
+    log {
+        output file /var/log/caddy/rag-access.log
+        level INFO
+    }
+}
+
+# ============================================
+# CHAT.SMARTERBOT.CL - Chatwoot
+# ============================================
+chat.smarterbot.cl {
+    reverse_proxy chatwoot-app:3000
+    encode gzip
+    log {
+        output file /var/log/caddy/chatwoot-access.log
+        level INFO
+    }
+}
+
+# ============================================
+# BOT.SMARTERBOT.CL - Telegram Bot Portal
+# ============================================
+bot.smarterbot.cl {
+    root * /var/www/bot
+    file_server
+    encode gzip
+    log {
+        output file /var/log/caddy/bot-access.log
+        level INFO
+    }
+}
+
+# ============================================
+# ODOO.SMARTERBOT.CL - ERP (Odoo Clone)
+# ============================================
+odoo.smarterbot.cl {
+    reverse_proxy odoo-clone-frontend:3000
+    encode gzip
+    log {
+        output file /var/log/caddy/odoo-access.log
+        level INFO
+    }
+}
+
+# ============================================
+# ODOO.SMARTERBOT.STORE - ERP (Odoo Clone)
+# ============================================
+odoo.smarterbot.store {
+    reverse_proxy odoo-clone-frontend:3000
+    encode gzip
+    log {
+        output file /var/log/caddy/odoo-store-access.log
+        level INFO
+    }
+}
+
+# ============================================
+# MKT.SMARTERBOT.STORE - Marketing Site
+# ============================================
+mkt.smarterbot.store {
+    reverse_proxy mkt-smarterbot-store:80
+    encode gzip
+    log {
+        output file /var/log/caddy/mkt-store-access.log
+        level INFO
+    }
+}
+
+# ============================================
+# TRELLO.NUNEX.LAT → Redirige a Trello.com
+# ============================================
+trello.nunex.lat {
+    redir https://trello.com{uri} permanent
+}
+
+# ============================================
+# TRELLO.SMARTERPROP.CL - Focalboard + Odoo
+# ============================================
+trello.smarterprop.cl {
+    reverse_proxy trello-smarterprop:8000 {
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+        header_up X-Forwarded-Proto "https"
+    }
+    encode gzip
+    log {
+        output file /var/log/caddy/trello-smarterprop-access.log
+        level INFO
+    }
+}
+
+# ============================================================
+# SERVICIOS INTERNOS (NO EXPONER - SOLO SSH TUNNEL)
+# ============================================================
+# Grafana:     ssh -L 3000:localhost:3000 root@vps → http://localhost:3000
+# Prometheus:  ssh -L 9090:localhost:9090 root@vps → http://localhost:9090
+# cAdvisor:    ssh -L 9091:localhost:9091 root@vps → http://localhost:9091
+# ============================================================
+
+# ============================================
+# DOKPLOY.SMARTERBOT.STORE - Dokploy Dashboard
+# ============================================
+dokploy.smarterbot.store {
+    reverse_proxy dokploy:3000
+    encode gzip
+    log {
+        output file /var/log/caddy/dokploy-access.log
+        level INFO
+    }
+}
