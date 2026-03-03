@@ -139,6 +139,18 @@ mkt.smarterbot.store {
 }
 
 # ============================================
+# MKT.SMARTERBOT.CL - Marketing Site (Chile)
+# ============================================
+mkt.smarterbot.cl {
+    reverse_proxy mkt-smarterbot-store:80
+    encode gzip
+    log {
+        output file /var/log/caddy/mkt-cl-access.log
+        level INFO
+    }
+}
+
+# ============================================
 # TRELLO.NUNEX.LAT → Redirige a Trello.com
 # ============================================
 trello.nunex.lat {
