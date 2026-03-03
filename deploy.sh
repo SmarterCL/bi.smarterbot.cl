@@ -13,12 +13,29 @@ cd /root/bi-smarterbot
 echo "📦 Pulling latest changes..."
 git pull origin main
 
-# Build and deploy
+# Build new image
 echo "🔨 Building Docker image..."
-docker-compose build bi-dashboard
+docker build -t bi-smarterbot:latest .
 
-echo "🔄 Deploying new version..."
-docker-compose up -d bi-dashboard
+# Stop old container
+echo "🛑 Stopping old container..."
+docker stop smarteros-bi-dashboard 2>/dev/null || true
+docker rm smarteros-bi-dashboard 2>/dev/null || true
+
+# Deploy new container
+echo "🚀 Starting new container..."
+docker run -d \
+    --name smarteros-bi-dashboard \
+    --restart unless-stopped \
+    --network smarteros-network \
+    --network dokploy-network \
+    -p 3001:3001 \
+    -e NODE_ENV=production \
+    -e PORT=3001 \
+    bi-smarterbot:latest
+
+# Wait for container to start
+sleep 3
 
 # Cleanup old images
 echo "🧹 Cleaning up old images..."
