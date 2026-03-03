@@ -35,6 +35,27 @@ services:
     depends_on:
       - bi-dashboard
 
+  webhook-server:
+    image: python:3.11-slim
+    container_name: bi-webhook-server
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./webhook-server.py:/app/webhook-server.py
+      - ./deploy.sh:/deploy.sh
+      - /root/bi-smarterbot:/root/bi-smarterbot
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - smarteros-network
+    ports:
+      - "8888:8888"
+    environment:
+      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET:-bi-smarterbot-secret}
+    command: >
+      sh -c "pip install requests && chmod +x /deploy.sh && python webhook-server.py"
+    depends_on:
+      - bi-dashboard
+
 networks:
   smarteros-network:
     external: true

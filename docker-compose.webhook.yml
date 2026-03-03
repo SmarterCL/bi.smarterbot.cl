@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  webhook:
+    image: alpine:latest
+    container_name: bi-webhook-handler
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/bi-smarterbot:/root/bi-smarterbot
+      - ./webhook-handler.sh:/webhook-handler.sh
+    working_dir: /
+    networks:
+      - smarteros-network
+    ports:
+      - "8888:8888"
+    environment:
+      - GITHUB_SECRET=${GITHUB_WEBHOOK_SECRET:-bi-smarterbot-secret}
+    command: >
+      sh -c "
+        apk add --no-cache docker git bash curl &&
+        chmod +x /webhook-handler.sh &&
+        while true; do
+          echo '{\"status\":\"ok\"}' | nc -l -p 8888 -q 1 &
+          NC_PID=$!
+          sleep 0.1
+          kill $NC_PID 2>/dev/null || true
+          /webhook-handler.sh >> /var/log/bi-webhook.log 2>&1 || true
+        done
+      "
+
+networks:
+  smarteros-network:
+    external: true
+    name: smarteros-network

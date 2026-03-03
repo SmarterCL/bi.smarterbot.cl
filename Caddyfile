@@ -29,6 +29,18 @@ bi.smarterbot.cl {
 }
 
 # ============================================
+# WEBHOOK - Auto-deploy endpoint
+# ============================================
+bi.smarterbot.cl/api/webhook {
+    reverse_proxy bi-webhook-server:8888
+    encode gzip
+    log {
+        output file /var/log/caddy/webhook-access.log
+        level INFO
+    }
+}
+
+# ============================================
 # DASHBOARD.SMARTERBOT.CL - SmarterOS Command Center (Legacy)
 # ============================================
 dashboard.smarterbot.cl {

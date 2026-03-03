@@ -1,4 +1,4 @@
-name: Deploy to Server
+name: Trigger Auto-Deploy
 
 on:
   push:
@@ -6,20 +6,23 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  trigger-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Trigger Deploy via SSH
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /root/bi-smarterbot
-            git pull origin main
-            chmod +x deploy.sh
-            bash deploy.sh
+      - name: Trigger Webhook
+        run: |
+          curl -X POST "https://bi.smarterbot.cl/api/webhook" \
+            -H "Content-Type: application/json" \
+            -H "X-GitHub-Event: push" \
+            -d '{
+              "ref": "refs/heads/main",
+              "repository": {
+                "name": "bi.smarterbot.cl",
+                "full_name": "SmarterCL/bi.smarterbot.cl"
+              },
+              "head_commit": {
+                "message": "${{ github.event.head_commit.message }}"
+              }
+            }'
+        env:
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
