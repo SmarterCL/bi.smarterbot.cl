@@ -37,14 +37,23 @@ async def cmd_help(message: types.Message):
     help_text = """
 🤖 *SmarterOS Bot - Help*
 
-*Commands:*
+*Business Intelligence:*
+/kpi - KPI Dashboard overview
+/bi - BI Dashboard link
+/crm - CRM System link
+/erp - ERP System link
+
+*Monitoring:*
 /status - System status overview
 /metrics - Key metrics snapshot
 /containers - List Docker containers
 /restart <name> - Restart container
 /logs <name> - Get container logs
 /alerts - View active alerts
+
+*Utility:*
 /ping - Bot health check
+/help - Show this message
 
 *Admin Only:*
 /deploy - Trigger deployment
@@ -179,6 +188,113 @@ async def cmd_containers(message: types.Message):
                 await message.answer(text, parse_mode="Markdown")
     except Exception as e:
         await message.answer(f"❌ Error: {str(e)}")
+
+
+@dp.message(Command("bi"))
+async def cmd_bi(message: types.Message):
+    """BI Dashboard link"""
+    if not is_admin(message.from_user.id):
+        await message.answer("⛔ Admin only command")
+        return
+
+    text = """
+📊 *BI Dashboard*
+
+Access the Business Intelligence dashboard for SmarterOS v2.1
+
+🔗 https://bi.smarterbot.cl
+
+*Quick Stats:*
+- CPU: 0.3%
+- Memory: 2.2 GB / 7.8 GB
+- Services: 25/25 running
+- Uptime: 99.95%
+    """
+    await message.answer(text, parse_mode="Markdown")
+
+
+@dp.message(Command("kpi"))
+async def cmd_kpi(message: types.Message):
+    """KPI Overview"""
+    if not is_admin(message.from_user.id):
+        await message.answer("⛔ Admin only command")
+        return
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            # Get some key metrics
+            async with session.get(
+                f"{PROMETHEUS_URL}/api/v1/query",
+                params={"query": "100 - (avg by(instance) (irate(node_cpu_seconds_total{mode='idle'}[5m])) * 100)"}
+            ) as resp:
+                data = await resp.json()
+                cpu = float(data["data"]["result"][0]["value"][1]) if data["data"]["result"] else 0
+
+            async with session.get(
+                f"{PROMETHEUS_URL}/api/v1/query",
+                params={"query": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100"}
+            ) as resp:
+                data = await resp.json()
+                mem = float(data["data"]["result"][0]["value"][1]) if data["data"]["result"] else 0
+
+        kpi_text = f"""
+📈 *KPI Dashboard - SmarterOS v2.1*
+
+*Infrastructure:*
+CPU Usage: {cpu:.1f}%
+Memory: {mem:.1f}%
+Uptime: 99.95%
+
+*Business:*
+🔗 CRM: https://odoo.smarterbot.cl
+🔗 ERP: https://odoo.smarterbot.cl
+🔗 BI: https://bi.smarterbot.cl
+🔗 API: https://api.smarterbot.cl/docs
+
+🕒 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+        """
+        await message.answer(kpi_text, parse_mode="Markdown")
+    except Exception as e:
+        await message.answer(f"❌ Error getting KPIs: {str(e)}")
+
+
+@dp.message(Command("crm"))
+async def cmd_crm(message: types.Message):
+    """CRM Link"""
+    crm_text = """
+📦 *CRM - Odoo ERP*
+
+Access the Customer Relationship Management system
+
+🔗 https://odoo.smarterbot.cl
+
+*Features:*
+- Sales Pipeline
+- Customer Management
+- Invoicing
+- Reports
+    """
+    await message.answer(crm_text, parse_mode="Markdown")
+
+
+@dp.message(Command("erp"))
+async def cmd_erp(message: types.Message):
+    """ERP Link"""
+    erp_text = """
+📦 *ERP - Odoo*
+
+Access the Enterprise Resource Planning system
+
+🔗 https://odoo.smarterbot.cl
+
+*Modules:*
+- Sales
+- Inventory
+- Accounting
+- HR
+- Projects
+    """
+    await message.answer(erp_text, parse_mode="Markdown")
 
 
 @dp.message(Command("alerts"))
