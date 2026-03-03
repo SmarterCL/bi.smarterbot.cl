@@ -9,11 +9,15 @@ import socketserver
 import subprocess
 import os
 import json
+import datetime
 from urllib.parse import urlparse
 
 PORT = 8089
 DEPLOY_SCRIPT = "/root/bi-smarterbot/deploy.sh"
 LOG_FILE = "/var/log/bi-webhook.log"
+
+def datetime_now():
+    return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 class WebhookHandler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
@@ -22,7 +26,7 @@ class WebhookHandler(http.server.BaseHTTPRequestHandler):
         
         # Log the request
         with open(LOG_FILE, 'a') as f:
-            f.write(f"Received webhook: {self.headers.get('X-GitHub-Event', 'unknown')}\n")
+            f.write(f"[{datetime_now()}] Received webhook: {self.headers.get('X-GitHub-Event', 'unknown')}\n")
         
         # Trigger deploy in background
         try:
@@ -35,12 +39,14 @@ class WebhookHandler(http.server.BaseHTTPRequestHandler):
             response = {"status": "success", "message": "Deploy triggered"}
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', len(json.dumps(response)))
             self.end_headers()
             self.wfile.write(json.dumps(response).encode())
         except Exception as e:
             response = {"status": "error", "message": str(e)}
             self.send_response(500)
             self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', len(json.dumps(response)))
             self.end_headers()
             self.wfile.write(json.dumps(response).encode())
         
@@ -49,14 +55,16 @@ class WebhookHandler(http.server.BaseHTTPRequestHandler):
     
     def do_GET(self):
         """Health check endpoint"""
+        response = {"status": "ok", "service": "bi-webhook"}
         self.send_response(200)
         self.send_header('Content-Type', 'application/json')
+        self.send_header('Content-Length', len(json.dumps(response)))
         self.end_headers()
-        self.wfile.write(json.dumps({"status": "ok", "service": "bi-webhook"}).encode())
+        self.wfile.write(json.dumps(response).encode())
     
     def log_message(self, format, *args):
         with open(LOG_FILE, 'a') as f:
-            f.write(f"{self.address_string()} - {format % args}\n")
+            f.write(f"[{datetime_now()}] {self.address_string()} - {format % args}\n")
 
 if __name__ == "__main__":
     with socketserver.TCPServer(("", PORT), WebhookHandler) as httpd:
